@@ -1,0 +1,65 @@
+import random
+import pygame
+
+pygame.init()
+width = 800
+height = 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Flappy Bird")
+
+background_image = pygame.image.load("ozadje.jpg").convert()
+
+ptica = pygame.image.load("ptica.png ").convert_alpha()
+
+def jump():
+    global bird_speed
+    bird_speed = bird_jump_height
+
+ovira_width = 100
+ovira_length = 300
+ovira_color = (0, 255, 0)
+ovira_speed = 5
+
+ovira_x = width
+ovira_gap = 200
+ovira_y = random.randint(ovira_gap, height - ovira_gap)
+
+bird_width, bird_height = ptica.get_size()
+bird_position = [width // 4, height // 2]
+bird_speed = 0
+bird_jump_height = 10
+bird_gravity = 0.5
+
+clock = pygame.time.Clock()
+running = True
+while running:
+    screen.blit(background_image, (0, 0)) 
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False 
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                jump()
+
+    bird_speed -= bird_gravity
+    bird_position[1] -= bird_speed
+    screen.blit(ptica, bird_position)
+
+    ovira_x -= ovira_speed
+    if ovira_x < -ovira_width:
+        ovira_x = width
+        ovira_gap = random.randint(150, 400)
+        ovira_y = random.randint(ovira_gap, height - ovira_gap)
+
+    pygame.draw.rect(screen, ovira_color, (ovira_x, 0, ovira_width, ovira_y - ovira_gap // 2))
+    pygame.draw.rect(screen, ovira_color, (ovira_x, ovira_y + ovira_gap // 2, ovira_width, height - ovira_y // 2))
+
+    if (bird_position[0] + bird_width >= ovira_x and bird_position[0] <= ovira_x + ovira_width and
+            (bird_position[1] <= ovira_y - ovira_gap // 2 or bird_position[1] + bird_height >= ovira_y + ovira_gap // 2)):
+        running = False
+
+    pygame.display.update()
+    clock.tick(60)
+
+pygame.quit()
+ 
